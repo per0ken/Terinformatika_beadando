@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lukács Péter Térinformatika beadandó</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+        integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ"
+        crossorigin="" />
+
+    <style>
+        #map {
+            width: 100%;
+            height: 100vh;
+        }
+
+        .popup-title {
+            font-weight: bold;
+        }
+
+        #videoButtonContainer {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            z-index: 1000;
+        }
+
+        #videoButton {
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="map"></div>
+    <div id="videoButtonContainer">
+        <div id="videoButton" onclick="playVideo()">Play Video</div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+        integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ"
+        crossorigin=""></script>
+
+    <script>
+        var map = L.map('map').setView([47.5302, 21.6273], 14);
+
+        var osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        var osmHotLayer = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Tiles courtesy of <a href="https://openstreetmap.fr/">OpenStreetMap.HOT</a>'
+        });
+
+        var Markerek = [
+            { name: "Nagyerdei Stadion", description: "2014-ben készült el.", coordinates: [47.55410, 21.63357] },
+            { name: "Debreceni Állat- és Növénykert", description: "1958-ban nyitotta meg kapuit a látogatók előtt.", coordinates: [47.55247, 21.63526] },
+            { name: "Aqutaicum Strandfürdő", description: "2002-ben nyitotta meg kapuit.", coordinates: [47.55444, 21.62908] },
+            { name: "Békás-tó", description: "Természetvédelmi terület.", coordinates: [47.55213, 21.62637] },
+        ];
+
+        var markerIcon = L.icon({
+            iconUrl: 'images/marker.png',
+            iconSize: [32, 32],
+            iconAnchor: [16, 32],
+            popupAnchor: [0, -32]
+        });
+
+        var markers = Markerek.map(function (marker) {
+            var popupContent = `<strong>${marker.name}</strong><br>${marker.description}`;
+            return L.marker(marker.coordinates, { icon: markerIcon }).bindPopup(popupContent).addTo(map);
+        });
+
+        var nagyErdoCoordinates = [
+            [47.55167, 21.62273],
+            [47.54830, 21.63249],
+            [47.54894, 21.64178],
+            [47.55509, 21.63807],
+            [47.55537, 21.62647]
+        ];
+
+        var nagyErdoPolygon = L.polygon(nagyErdoCoordinates, { color: 'green', fillColor: 'lightgreen', fillOpacity: 0.5 }).addTo(map);
+
+        var geoJsonPolygon = {
+            type: 'Feature',
+            properties: { name: 'Víztorony' },
+            geometry: {
+                type: 'Polygon',
+                coordinates: [
+                    [
+                        [21.63098, 47.55504],
+                        [21.63132, 47.55502],
+                        [21.63136, 47.55467],
+                        [21.63101, 47.55469],
+                        [21.63098, 47.55504]
+                    ]
+                ]
+            }
+        };
+
+        var geoJsonLayer = L.geoJSON(geoJsonPolygon, {
+            style: function (feature) {
+                return { color: 'blue', fillColor: 'lightblue', fillOpacity: 0.5 };
+            }
+        }).addTo(map);
+
+        var imageBounds = [[47.5580, 21.6410], [47.5532, 21.6519]];
+        var overlay = L.imageOverlay('images/overlay.jpg', imageBounds).addTo(map);
+
+        var baseLayers = {
+            "OpenStreetMap": osmLayer,
+            "OpenStreetMap.HOT": osmHotLayer
+        };
+
+        var overlays = {
+            "Nagyerdő park": nagyErdoPolygon,
+            "Overlay kép": overlay,
+            "Markerek": L.layerGroup(markers),
+            "GeoJSON Polygon": geoJsonLayer
+        };
+
+        L.control.layers(baseLayers, overlays).addTo(map);
+o
+        function playVideo() {
+            var videoPath = 'images/video.mp4';
+            var videoPopupContent = `<video width="320" height="240" controls><source src="${videoPath}" type="video/mp4">Your browser does not support the video tag.</video>`;
+            
+            L.popup().setLatLng([47.55167, 21.62273]).setContent(videoPopupContent).openOn(map);
+        }
+    </script>
+</body>
+
+</html>
