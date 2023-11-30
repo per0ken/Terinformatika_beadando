@@ -110,6 +110,10 @@
             }
         }).addTo(map);
 
+        geoJsonLayer.on('click', function (event) {
+            window.open('https://www.nagyerdeiviztorony.hu/', '_blank');
+        });
+
         var imageBounds = [[47.5580, 21.6410], [47.5532, 21.6519]];
         var overlay = L.imageOverlay('images/overlay.jpg', imageBounds).addTo(map);
 
@@ -126,7 +130,7 @@
         };
 
         L.control.layers(baseLayers, overlays).addTo(map);
-o
+
         function playVideo() {
             var videoPath = 'images/video.mp4';
             var videoPopupContent = `<video width="320" height="240" controls><source src="${videoPath}" type="video/mp4">Your browser does not support the video tag.</video>`;
